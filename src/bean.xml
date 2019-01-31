@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans.xsd
+                            http://www.springframework.org/schema/aop
+                            http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="iCustomerService" class="com.itheima.service.impl.ICustomerServiceImpl"></bean>
+
+    <!--基于xml的SpringAOP配置步骤-->
+    <!--第一步，把通知类交给Spring管理-->
+    <bean id="logger" class="com.itheima.util.Logger"></bean>
+    <!--第二步，导入AOP名称空间，并且使用aop:config开始aop配置-->
+    <aop:config>
+        <!--定义通用的切入点表达式，如果是写在了aop:aspect标签内部，则表示对当前的切面可用，如果是外部，那么就是对所有的切面可用-->
+        <aop:pointcut id="pointCut" expression="execution( * com.itheima.service.impl.ICustomerServiceImpl.*(..))"></aop:pointcut>
+
+        <!--第三步，使用aop:aspect配置切面 id用于给切面提供一个唯一标识码，ref属性是通知类bean的id-->
+        <aop:aspect id="LogAdvice" ref="logger">
+            <!--第四步，配置通知的类型，指定增强的方法何时执行。method属性：用于指定增强的方法名称-->
+                <!--pointCut属性用于指定切入点表达式-->
+                <!--切入点表达式-->
+                    <!--关键字：execution（表达式）-->
+                    <!--表达式写法：-->
+                        <!--访问修饰符 返回值 包名.包名...类名.方法名(参数列表)-->
+                        <!--全匹配方式：public void com.itheima.service.impl.ICustomerServiceImpl.saveCustomer()-->
+                                    <!--访问修饰符可以省略：void com.itheima.service.impl.ICustomerServiceImpl.saveCustomer()-->
+                                    <!--返回值可以使用通配符(*)，表示任意返回值:* com.itheima.service.impl.ICustomerServiceImpl.saveCustomer()-->
+                                    <!--包名可以使用通配符，但是有几个包就得使用几个.* :* *.*.*.*.ICustomerServiceImpl.saveCustomer()-->
+                                    <!--包名可以使用..表示当前包及其子包 * com..ICustomerServiceImpl.saveCustomer()-->
+                                    <!--类名和方法名都可以使用通配符：* com..*.()-->
+                                    <!--参数列表可以使用具体类型，来代表参数类型:-->
+                                        <!--基本类型，直接写类型名称:int float char-->
+                                        <!--引用类型，必须是包名.类名：java.lang.String-->
+                                    <!--参数列表可以使用通配符，表示任意类型，但是必须有参数-->
+                                    <!--参数列表可以使用..表示有无参数均可，有参数可以是任意类型-->
+                        <!--全通配方式：* *..*.*(..)-->
+                        <!--实际开发中我们一般是对业务层代码进行增强，所以写法一般都是-->
+                                    <!--* com.itheima.service.impl.*.*(..)-->
+
+
+            <aop:before method="pringLog" pointcut="execution(public void com.itheima.service.impl.ICustomerServiceImpl.saveCustomer())"></aop:before>
+
+            <!--引用pointcut切入点表达式-->
+            <aop:before method="pringLog" pointcut-ref="pointCut"></aop:before>
+        </aop:aspect>
+    </aop:config>
+
+
+</beans>
